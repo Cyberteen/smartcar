@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c783940f-f7cf-46f7-8bde-234a6c44758c" name="Default Changelist" comment="First commit">
+    <list default="true" id="c783940f-f7cf-46f7-8bde-234a6c44758c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/grader2.py" beforeDir="false" afterPath="$PROJECT_DIR$/grader2.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,20 +29,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/grader2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="508" selection-start-line="508" selection-end-line="508" />
+            <state relative-caret-position="169">
+              <caret line="203" lean-forward="true" selection-start-line="203" selection-end-line="203" />
               <folding>
                 <element signature="e#89#99#0" expanded="true" />
               </folding>
@@ -49,36 +42,9 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Python36/Lib/_strptime.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="151">
-              <caret line="361" selection-start-line="361" selection-end-line="361" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Python36/Lib/types.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2430">
-              <caret line="135" selection-start-line="135" selection-end-line="135" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Python36/Lib/enum.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9882">
-              <caret line="552" selection-start-line="552" selection-end-line="552" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/Python36/Lib/codecs.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5544">
+            <state relative-caret-position="142">
               <caret line="308" selection-start-line="308" selection-end-line="308" />
             </state>
           </provider>
@@ -278,7 +244,14 @@
       <option name="project" value="LOCAL" />
       <updated>1565378416303</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="speed limits changed to km/h&#10;add global variable current_segment&#10;added zone based speed_limit calculation&#10;changed turn 1 while loop limits to distance&#10;removed unwanted code in turn 1">
+      <created>1565497980099</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1565497980099</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TodoView">
@@ -341,7 +314,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="First commit" />
+    <MESSAGE value="speed limits changed to km/h&#10;add global variable current_segment&#10;added zone based speed_limit calculation&#10;changed turn 1 while loop limits to distance&#10;removed unwanted code in turn 1" />
+    <option name="LAST_COMMIT_MESSAGE" value="speed limits changed to km/h&#10;add global variable current_segment&#10;added zone based speed_limit calculation&#10;changed turn 1 while loop limits to distance&#10;removed unwanted code in turn 1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -368,53 +342,63 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>661</line>
+          <line>738</line>
           <option name="timeStamp" value="161" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>740</line>
+          <line>817</line>
           <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>763</line>
+          <line>840</line>
           <option name="timeStamp" value="169" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>686</line>
+          <line>763</line>
           <option name="timeStamp" value="170" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>647</line>
+          <line>724</line>
           <option name="timeStamp" value="179" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>481</line>
+          <line>559</line>
           <option name="timeStamp" value="186" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>547</line>
+          <line>624</line>
           <option name="timeStamp" value="192" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>545</line>
+          <line>622</line>
           <option name="timeStamp" value="195" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>542</line>
+          <line>619</line>
           <option name="timeStamp" value="197" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>171</line>
+          <line>172</line>
           <option name="timeStamp" value="199" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/grader2.py</url>
+          <line>451</line>
+          <option name="timeStamp" value="212" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/grader2.py</url>
+          <line>424</line>
+          <option name="timeStamp" value="213" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -429,17 +413,19 @@
       <configuration name="PythonConfigurationType">
         <watch expression="acc2" />
         <watch expression="speed" />
-        <watch expression="lat" />
         <watch expression="dist" />
-        <watch expression="last_speed" />
-        <watch expression="lon" />
-        <watch expression="lat" />
         <watch expression="event_dist" />
+        <watch expression="prev_speed" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
+      <expression>
+        <expression-string>prev_speed</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>cnt</expression-string>
         <language-id>Python</language-id>
@@ -503,13 +489,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Python36/Lib/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5544">
-          <caret line="308" selection-start-line="308" selection-end-line="308" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -534,10 +513,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Python36/Lib/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="142">
+          <caret line="308" selection-start-line="308" selection-end-line="308" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/grader2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="508" selection-start-line="508" selection-end-line="508" />
+        <state relative-caret-position="169">
+          <caret line="203" lean-forward="true" selection-start-line="203" selection-end-line="203" />
           <folding>
             <element signature="e#89#99#0" expanded="true" />
           </folding>
