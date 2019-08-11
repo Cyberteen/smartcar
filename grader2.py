@@ -33,8 +33,8 @@ zone_limits = [
 ]
 
 speed_limits = [
-    (25, 25, 20, 45),  # segment 1
-    (45, 45, 35)  # segment 2
+    (40.23, 40.23, 32.18, 72.41),#(25, 25, 20, 45),  # segment 1
+    (72.41, 72.41, 56.3)  # segment 2
 ]
 
 
@@ -88,6 +88,7 @@ time_fmt = "%H:%M:%S.%f"
 prev_time = 0
 prev_state = State.undefined
 state_now = State.undefined
+current_segment = 0
 current_zone = Zone.undefined  # current zone
 prev_zone = Zone.undefined
 speed_limit = 35
@@ -143,11 +144,11 @@ turn_start = [
 # turn_end[10] = (41.997383, -93.637181)
 
 
-# need for newtown drive turns
+# need for newton drive turns
 
 
 def segment_report():
-    global event_dist, thresh
+    global event_dist, thresh, speed_limits, current_segment
 
     acc_dist = 0
     dec_dist = 0
@@ -155,47 +156,59 @@ def segment_report():
     penalty = 0
     score = 1
     total_jerk = 0
-
+    dist_per_zone = [0,0,0,0] #per event
+    speed_penalty_per_zone = [0,0,0,0]
     # for action in segment_dist:
 
-    for a in event_dist[0]:  # acceleration
+    for a in event_dist[State.accelerating.value]:  # acceleration
         acc_dist += a[0]
-        penalty += a[0] * a[1]
+        # if exceeded the threshold, calculate penalty
+        penalty += (0, a[0] * a[1]*0.28)[a[1] > 0]  # dist accelerated * excess accelerated * 0.28 for m/s^2 conversion
         total_jerk += abs(a[2])
+        # 1st element is the distance covered over last second. 5th element is that zone's value
+        dist_per_zone[a[4]]+= a[0]
+        speed_penalty_per_zone[a[4]] += a[0]*a[3]  #dist *excess speed saved for each zone num(a[4))
 
     print("Total distance accelerated:" + str(acc_dist) + ' m')
     if acc_dist is not 0:
-        print(" Acceleration Score: " + str((1 - (penalty / (acc_dist * thresh[0]))) * 100) + '%')
+        print(" Acceleration Score: " + str((1 - (penalty / (acc_dist * thresh[State.accelerating.value]*0.28))) * 100) + '%')
 
-    print("Average jerk: " + str(total_jerk / len(event_dist[0])))
+    print("Average jerk: " + str(total_jerk / len(event_dist[State.accelerating.value])))
+
+    speed_score_perZone = [0,0,0,0]
+
+    for n in range(0,len(speed_limits[current_segment])):
+        speed_score_perZone[n] = (dist_per_zone[n]*speed_limits[current_segment][n] - speed_penalty_per_zone[n])/dist_per_zone[n]
+
+    print("Speed limit")
 
     penalty = 0
     total_jerk = 0
 
-    for d in event_dist[1]:
+    for d in event_dist[State.decelerating.value]:
         dec_dist += d[0]
         penalty += d[0] * d[1]
         total_jerk += abs(d[2])
 
     print("Total distance decelerated`:" + str(dec_dist) + ' m')
     if dec_dist is not 0:
-        print(" Deceleration Score: " + str((1 - (penalty / (dec_dist * thresh[1]))) * 100) + '%')
+        print(" Deceleration Score: " + str((1 - (penalty / (dec_dist * thresh[State.decelerating.value]))) * 100) + '%')
 
-    print("Average jerk: " + str(total_jerk / len(event_dist[1])))
+    print("Average jerk: " + str(total_jerk / len(event_dist[State.decelerating.value])))
 
     total_jerk = 0
     penalty = 0
 
-    for c in event_dist[2]:
+    for c in event_dist[State.cruise.value]:
         cruise_dist += c[0]
         penalty += c[0] * c[1]
         total_jerk += abs(c[2])
 
     print("Total distance cruised: " + str(cruise_dist) + "m")
     if cruise_dist is not 0:
-        print("Cruise score:" + str((1 - (penalty / (cruise_dist * thresh[2]))) * 100) + "%")
+        print("Cruise score:" + str((1 - (penalty / (cruise_dist * thresh[State.cruise.value]))) * 100) + "%")
 
-    print("Average jerk: " + str(total_jerk / len(event_dist[2])))
+    print("Average jerk: " + str(total_jerk / len(event_dist[State.cruise.value])))
 
     if has_stopSign:
         if complete_stop:
@@ -218,7 +231,7 @@ def turn_report():
         total_speed += t[1]
 
     avg_speed = total_speed / len(turn_excess)
-    print("Average speed: "+ str(avg_speed))
+    print("Average speed: " + str(avg_speed))
 
 
     #print('Maximum turn speed reached:' + str(last_speed) + ' km/h')
@@ -354,10 +367,15 @@ def calc_excess():
     if state_now != State.stop:
         delta_dist = current_dist - prev_dist
         excess_acc = abs(acc2) - abs(thresh[state_now.value])
+        excess_speed = speed - speed_limit
+
+        # tuple of dist , excess acc, jerk and excess speed
         event_dist[state_now.value].append(
             (delta_dist,
              (0, excess_acc)[excess_acc > 0],
-             jerk
+             jerk,
+             (0, excess_speed)[excess_speed > 0],
+             current_zone.value
              )
         )
 
@@ -366,17 +384,18 @@ def calc_excess():
                 (delta_dist, speed)
             )
 
-        if speed > speed_limit:
-            event_dist[3].append((delta_dist, speed - speed_limit))
+        #if speed > speed_limit:
+         #   event_dist[3].append((delta_dist, speed - speed_limit))
 
 
 # identifies zone based on distance. Sets has_turn flag and also the speed limit for the zone
 def identify_zone():
-    global has_turn, has_stopLight, has_stopSign, current_zone, speed_limit
+    global has_turn, has_stopLight, has_stopSign, current_zone, speed_limit, current_segment
 
     if segment_limits[0][0] <= dist <= segment_limits[0][1]:  # segment number, start/end
         has_turn = True  # indicates that this segment has a turn
         has_stopSign = True
+        current_segment = 0
         if zone_limits[0][0][0] <= dist <= zone_limits[0][0][1]:  # segment number,zone number ,start/end limit
             update_zone(Zone.Approaching)
             # current_zone = Zone.Approaching
@@ -401,6 +420,7 @@ def identify_zone():
     if segment_limits[1][0] <= dist <= segment_limits[1][1]:
         has_turn = True
         has_stopLight = True
+        current_segment = 1
 
         if zone_limits[1][0][0] <= dist <= zone_limits[1][0][1]:
             update_zone(Zone.Approaching)
@@ -455,15 +475,11 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
     for row in reader:
 
         # wait till reaching turn 1 stop sign
-        # while True:
-        #     if lat != 0 and lon != 0:
-        #         current_dist = gps_distance(turn_start[0])
-        #         if current_dist < 5:  # or is_point_crossed(turn_start[0]):
-        #             break
-        #     row = next(reader)
-        #     update_params(row)
+        while dist < segment_limits[0][0]:
+            row = next(reader)
+            update_params(row)
 
-        print("Inside turn 1")
+        print("Inside segment 1")
         reset_params()
 
         # wait till reaching turn 1
@@ -475,8 +491,8 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
         # while (dist >= limits[0]) and (dist <= limits[1]):
         # while 42.00061 < lat < 42.0008 and lat != 0:
 
-        while zone_dist <= turn_dist[0]:
-
+        #while zone_dist <= turn_dist[0]:
+        while dist <= segment_limits[0][1]:
             # keep moving in csv rows for 1 second
             while is_time() is False:
                 update_params(row)
@@ -513,35 +529,6 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
 
 
 
-            # if current_state == State.undefined:
-            #     current_state = state_now
-            #     prev_state = current_state
-            #
-            # else:
-            #     # if True, previously some change of state happened.
-            #     # we have to check if the prev state still holds true
-            #     if state_check is True:
-            #         if state_now == prev_state:
-            #             # Then we have to update the state and reset the state_check flag
-            #             current_state = state_now
-            #             state_check = False
-            #
-            #
-            #     # False means nothing happened last time, so no need to change states.
-            #     # We will analyze the state_now and see if we have to check again next time
-            #     else:
-            #         # only if there is state change, we need to check again next time.
-            #         if state_now != prev_state:
-            #             # check again next time
-            #             state_check = True
-            #             prev_state = state_now
-            #             # continue
-            #             # update row and continue for the next row
-            #         else:
-            #             # no need to check next time for continuity
-            #             state_check = False
-            #             prev_state = state_now
-
             print(state_now)
 
             row = next(reader)
@@ -550,11 +537,12 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
             current_dist = dist
             zone_dist += (current_dist - prev_dist)
 
-        print('End of turn 1')
+        print('End of segment 1')
 
         print("Segment 1 report:")
         segment_report()
         if has_turn is True:
+            print("Turn report:")
             turn_report()
 
         reset_params()
