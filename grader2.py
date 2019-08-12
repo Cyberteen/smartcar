@@ -80,7 +80,7 @@ min_speed = 200
 prev_dist = 0.0  # for noting distance from last GPS fix to target point
 curr_dist = 0.0  # for noting distance from current GPS fix to target point
 zone_dist = 0.0
-
+total_event_dist = [0,0,0]  # to store total distance happened for an event in a segment
 prev_gps_fix = (0, 0)
 time_fmt = "%H:%M:%S.%f"
 prev_time = 0
@@ -96,14 +96,15 @@ jerk = 0
 prev_jerk = 0
 acc1 = 0.0
 acc2 = 0.0
-state_check = False
-is_first = True
+
 
 # Its a list of lists each containing tuples of (distance , excess acc, excess speed) pair
 event_dist = [[], [], [], []]  # acceleration, deceleration, cruise and speed
 turn_excess = []
 thresh = [5, -5, 1]  # acceleration/deceleration threshold levels
 
+#list of tuples containing (event, score, dist) for each type of event - acc, dec, cruise
+segment_scores = [[], [], []]
 # row params
 acc = 0.0
 row_speed = 0.0
@@ -148,89 +149,105 @@ turn_start = [
 
 
 def segment_report():
-    global event_dist, thresh, speed_limits, current_segment
+    global event_dist, thresh, speed_limits, current_segment, total_event_dist
 
-    acc_dist = 0
-    dec_dist = 0
-    cruise_dist = 0
-    penalty = 0
-    score = 1
-    total_jerk = 0
-    dist_per_zone = [0, 0, 0, 0]  # per event
-    speed_penalty_per_zone = [0, 0, 0, 0]
-    # for action in segment_dist:
+    score = 0
 
-    for a in event_dist[State.accelerating.value]:  # acceleration
-        acc_dist += a[0]
-        # if exceeded the threshold, calculate penalty
-        penalty += (0, a[0] * a[1] * 0.28)[
-            a[1] > 0]  # dist accelerated * excess accelerated * 0.28 for m/s^2 conversion
-        total_jerk += abs(a[2])
-        # 1st element is the distance covered over last second. 5th element is that zone's value
-        dist_per_zone[a[4]] += a[0]
-        speed_penalty_per_zone[a[4]] += a[0] * (a[3]*0.28)  # dist in m *excess speed in m/s saved for each zone num(a[4))
+    if len(event_dist[State.accelerating.value]) is not 0:
+        grade_event(State.accelerating)
 
-    print("Total distance accelerated:" + str(acc_dist) + ' m')
-    if acc_dist is not 0:
-        print(" Acceleration Score: " + str(
-            (1 - (penalty / (acc_dist * thresh[State.accelerating.value] * 0.28))) * 100) + '%')
+    print("No.of accelerations: " + str(len(segment_scores[State.accelerating.value])))
 
-    print("Average jerk: " + str(total_jerk / len(event_dist[State.accelerating.value])))
+    for event_score in segment_scores[State.accelerating.value]:
+        # dist travelled in that event session / total distance of that event in this segment times the score for that session
+        score += (event_score[1]/total_event_dist[State.accelerating.value])*event_score[0]
 
-    speed_score_perZone = [0, 0, 0, 0]
+    print("Total acceleration score: "+ str(score) + "%")
 
-    print("Speed limit scores:")
-    for n in range(0, len(speed_limits[current_segment])):
-        # n is zone number
-        if dist_per_zone[n] is not 0:
-            speed_score_perZone[n] = \
-                1 - (speed_penalty_per_zone[n]) / ( dist_per_zone[n] * speed_limits[current_segment][n]*0.28)
-        else:
-            speed_score_perZone[n] = 0
+    score = 0
 
-        print("Zone "+str(n+1) + ": " + str(speed_score_perZone[n]*100) + "% for " + str(dist_per_zone[n]) + 'm')
+    if len(event_dist[State.decelerating.value]) is not 0:
+        grade_event(State.decelerating)
 
+    print("No.of Decelerations: " + str(len(segment_scores[State.decelerating.value])))
 
+    for event_score in segment_scores[State.decelerating.value]:
+        # dist travelled in that event session / total distance of that event in this segment times the score for that session
+        score += (event_score[1] / total_event_dist[State.decelerating.value]) * event_score[0]
 
-    penalty = 0
-    total_jerk = 0
+    print("Total Deceleration score: " + str(score) + "%")
 
-    for d in event_dist[State.decelerating.value]:
-        dec_dist += d[0]
-        penalty += d[0] * d[1]
-        total_jerk += abs(d[2])
-
-    print("Total distance decelerated`:" + str(dec_dist) + ' m')
-    if dec_dist is not 0:
-        print(
-            " Deceleration Score: " + str((1 - (penalty / (dec_dist * thresh[State.decelerating.value]))) * 100) + '%')
-
-    print("Average jerk: " + str(total_jerk / len(event_dist[State.decelerating.value])))
-
-    total_jerk = 0
-    penalty = 0
-
-    for c in event_dist[State.cruise.value]:
-        cruise_dist += c[0]
-        penalty += c[0] * c[1]
-        total_jerk += abs(c[2])
-
-    print("Total distance cruised: " + str(cruise_dist) + "m")
-    if cruise_dist is not 0:
-        print("Cruise score:" + str((1 - (penalty / (cruise_dist * thresh[State.cruise.value]))) * 100) + "%")
-
-    print("Average jerk: " + str(total_jerk / len(event_dist[State.cruise.value])))
-
-    if has_stopSign:
-        if complete_stop:
-            score = 1
-            print("complete stop detected")
-            print("Score:" + str(score * 100))
-        else:
-            print("incomplete stop / rolling stop detected!")
-            print("score: " + str(100 - pow(min_speed, 2)))
-
-    return
+    # for a in event_dist[State.accelerating.value]:  # acceleration
+    #     acc_dist += a[0]
+    #     # if exceeded the threshold, calculate penalty
+    #     penalty += (0, a[0] * a[1] * 0.28)[
+    #         a[1] > 0]  # dist accelerated * excess accelerated * 0.28 for m/s^2 conversion
+    #     total_jerk += abs(a[2])
+    #     # 1st element is the distance covered over last second. 5th element is that zone's value
+    #     dist_per_zone[a[4]] += a[0]
+    #     speed_penalty_per_zone[a[4]] += a[0] * (a[3]*0.28)  # dist in m *excess speed in m/s saved for each zone num(a[4))
+    #
+    # print("Total distance accelerated:" + str(acc_dist) + ' m')
+    # if acc_dist is not 0:
+    #     print(" Acceleration Score: " + str(
+    #         (1 - (penalty / (acc_dist * thresh[State.accelerating.value] * 0.28))) * 100) + '%')
+    #
+    # print("Average jerk: " + str(total_jerk / len(event_dist[State.accelerating.value])))
+    #
+    # speed_score_perZone = [0, 0, 0, 0]
+    #
+    # print("Speed limit scores:")
+    # for n in range(0, len(speed_limits[current_segment])):
+    #     # n is zone number
+    #     if dist_per_zone[n] is not 0:
+    #         speed_score_perZone[n] = \
+    #             1 - (speed_penalty_per_zone[n]) / ( dist_per_zone[n] * speed_limits[current_segment][n]*0.28)
+    #     else:
+    #         speed_score_perZone[n] = 0
+    #
+    #     print("Zone "+str(n+1) + ": " + str(speed_score_perZone[n]*100) + "% for " + str(dist_per_zone[n]) + 'm')
+    #
+    #
+    #
+    # penalty = 0
+    # total_jerk = 0
+    #
+    # for d in event_dist[State.decelerating.value]:
+    #     dec_dist += d[0]
+    #     penalty += d[0] * d[1]
+    #     total_jerk += abs(d[2])
+    #
+    # print("Total distance decelerated`:" + str(dec_dist) + ' m')
+    # if dec_dist is not 0:
+    #     print(
+    #         " Deceleration Score: " + str((1 - (penalty / (dec_dist * thresh[State.decelerating.value]))) * 100) + '%')
+    #
+    # print("Average jerk: " + str(total_jerk / len(event_dist[State.decelerating.value])))
+    #
+    # total_jerk = 0
+    # penalty = 0
+    #
+    # for c in event_dist[State.cruise.value]:
+    #     cruise_dist += c[0]
+    #     penalty += c[0] * c[1]
+    #     total_jerk += abs(c[2])
+    #
+    # print("Total distance cruised: " + str(cruise_dist) + "m")
+    # if cruise_dist is not 0:
+    #     print("Cruise score:" + str((1 - (penalty / (cruise_dist * thresh[State.cruise.value]))) * 100) + "%")
+    #
+    # print("Average jerk: " + str(total_jerk / len(event_dist[State.cruise.value])))
+    #
+    # if has_stopSign:
+    #     if complete_stop:
+    #         score = 1
+    #         print("complete stop detected")
+    #         print("Score:" + str(score * 100))
+    #     else:
+    #         print("incomplete stop / rolling stop detected!")
+    #         print("score: " + str(100 - pow(min_speed, 2)))
+    #
+    # return
 
 
 def turn_report():
@@ -255,7 +272,7 @@ def turn_report():
 # converting required data from string to float
 def update_params(row):
     global acc, row_speed, speed, lat, lon, dist
-    global row_time, prev_speed, prev_state, is_first
+    global row_time, current_dist
 
     acc = float(row[acc_idx])
     row_speed = float(row[speed_idx])
@@ -264,31 +281,8 @@ def update_params(row):
     dist = float(row[dist_idx])
     row_time = row[time_idx]
 
-    # if is_first:
-    #     prev_speed = speed
     speed = row_speed
-
-    #state is saved in update_acc
-
-    return
-
-
-def reset_params():
-    global avg_speed, turn_entrySpeed, turn_exitSpeed, prev_speed, current_dist, prev_dist, check, cnt
-    global has_stopLight, has_stopSign, has_turn, complete_stop
-
-    avg_speed = 0.0
-    turn_exitSpeed = 0.0
-    turn_entrySpeed = 0.0
-    prev_speed = speed
-    cnt = 0.0
-    current_dist = 0.0
-    check = False
-    has_stopSign = False
-    has_turn = False
-    has_stopLight = False
-    complete_stop = False
-
+    current_dist = dist
     return
 
 
@@ -408,18 +402,19 @@ def calc_excess():
 
 def grade_event(event):
     global event_dist, thresh, speed_limits, current_segment, complete_stop, min_speed
-    global speed, prev_speed, acc1, acc2, jerk1, jerk2
+    global speed, prev_speed, acc1, acc2, total_event_dist
 
     if (event is State.accelerating) or (event is State.decelerating):
         acc_dist = 0
         dec_dist = 0
         cruise_dist = 0
         penalty = 0
-        score = 1
+        speed_limit_score = 0
         total_jerk = 0
         # total distance for a event per zone
         dist_per_zone = [0, 0, 0, 0]  # per event
         speed_penalty_per_zone = [0, 0, 0, 0]
+
         # for action in segment_dist:
 
         for a in event_dist[event.value]:  # acceleration
@@ -433,9 +428,12 @@ def grade_event(event):
             speed_penalty_per_zone[a[4]] += a[0] * a[3]*0.28  # dist *excess speed saved for each zone num(a[4))
 
         print("Total distance " + event.name + ': ' + str(acc_dist) + ' m')
+        total_event_dist[event.value] += acc_dist
+
         if acc_dist is not 0:
-            print(event.name + ' event Score:' + str(
-                (1 - abs((penalty / (acc_dist * thresh[event.value] * 0.28)))) * 100) + '%')
+            score = (1 - abs((penalty / (acc_dist * thresh[event.value] * 0.28)))) * 100
+            segment_scores[event.value].append((score, acc_dist))
+            print(event.name + ' event Score:' + str(score) + '%')
 
         print("Average jerk: " + str(total_jerk / len(event_dist[event.value])))
 
@@ -446,11 +444,15 @@ def grade_event(event):
                 if dist_per_zone[n] is not 0:
                     speed_score_perZone[n] = \
                         1 - (speed_penalty_per_zone[n])/ (dist_per_zone[n]*speed_limits[current_segment][n]*0.28)
+
+                    speed_limit_score += (dist_per_zone[n]/acc_dist)*(speed_score_perZone[n])
                 else:
                     speed_score_perZone[n] = 0
 
                 print(
                     "Zone " + str(n + 1) + ": " + str(speed_score_perZone[n] * 100) + "% for " + str(dist_per_zone[n]) + 'm')
+
+            print("Total speed limit score: " + str(speed_limit_score*100)+ "%")
 
     if event is State.stop:
         if prev_zone is Zone.Special and has_stopSign:
@@ -527,24 +529,30 @@ def update_zone(zone_now):
 # called after every segment is finished
 def reset_params():
     global acc1, acc2, jerk, speed, prev_speed, prev_time, current_dist, prev_dist, zone_dist, event_dist
-    global current_zone, prev_zone, row_speed
+    global current_zone, prev_zone, row_speed, avg_speed, prev_state
+    global has_stopLight, has_stopSign, has_turn, complete_stop, turn_entrySpeed, turn_exitSpeed
+
     acc1 = 0
     acc2 = 0
     jerk = 0
     prev_speed = speed
-    speed = row_speed
+    avg_speed = 0
+    turn_entrySpeed = 0
+    turn_exitSpeed = 0
     prev_time = datetime.strptime(row_time, time_fmt)
 
     event_dist = [[], [], [], []]
-    # update current distance from the turn end point
-    current_dist = dist
+
     prev_dist = dist
     zone_dist = 0.0
-    current_zone = Zone.undefined
     prev_zone = Zone.undefined
+    prev_state = State.undefined
 
+    has_stopSign = False
+    has_turn = False
+    has_stopLight = False
+    complete_stop = False
 
-# def update_state():
 
 # with open('C:\\Users\\ssridhar\\Documents\\logs\\log_LAPS_2019_07_14_16_10_42.csv') as file:
 with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_2019_07_14_16_10_42.csv') as file:
@@ -567,7 +575,6 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
             while is_time() is False:
                 row = next(reader)
                 update_params(row)
-
 
 
             # use the above updated params to calc. acc and jerk
@@ -622,14 +629,10 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
             print("Turn report:")
             turn_report()
 
-        reset_params()
+        #reset_params()
 
-        # wait till reaching turn 2
-        while True:
-            if lat != 0 and lon != 0:
-                current_dist = gps_distance(turn_start[1])
-                if current_dist < 5:  # or is_point_crossed(turn_start[1]):
-                    break
+        # wait till reaching segment 2
+        while dist < segment_limits[1][0]:
             row = next(reader)
             update_params(row)
 
@@ -639,7 +642,7 @@ with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_
 
         reset_params()
 
-        while zone_dist <= turn_dist[1]:
+        while dist <= segment_limits[1][1]:
             # keep moving in csv rows for 1 second
             while is_time() is False:
                 update_params(row)
