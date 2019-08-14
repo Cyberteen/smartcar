@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c783940f-f7cf-46f7-8bde-234a6c44758c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/grader2.py" beforeDir="false" afterPath="$PROJECT_DIR$/grader2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,7 +13,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FavoritesManager">
-    <favorites_list name="TurnGrader" />
+    <favorites_list name="TurnGrader">
+      <favorite_root url="file://$PROJECT_DIR$/grader2.py" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+    </favorites_list>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -32,11 +34,29 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/grader2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="203" lean-forward="true" selection-start-line="203" selection-end-line="203" />
+            <state relative-caret-position="259">
+              <caret line="583" lean-forward="true" selection-start-line="583" selection-end-line="583" />
               <folding>
                 <element signature="e#89#99#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/testing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="5" column="23" lean-forward="true" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/helpers/python-skeletons/numpy/core/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="329">
+              <caret line="488" column="8" selection-start-line="488" selection-start-column="8" selection-end-line="488" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -46,6 +66,15 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="142">
               <caret line="308" selection-start-line="308" selection-end-line="308" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Python36/Lib/types.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="135" selection-start-line="135" selection-end-line="135" />
             </state>
           </provider>
         </entry>
@@ -74,6 +103,7 @@
       <find>turn</find>
       <find>excess</find>
       <find>calc</find>
+      <find>penalty</find>
     </findStrings>
     <replaceStrings>
       <replace>dist</replace>
@@ -98,16 +128,16 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/grader1.py" />
-        <option value="$PROJECT_DIR$/testing.py" />
         <option value="$PROJECT_DIR$/grader2.py" />
+        <option value="$PROJECT_DIR$/testing.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-10" />
-    <option name="y" value="-10" />
-    <option name="width" value="1939" />
-    <option name="height" value="1049" />
+    <option name="x" value="-9" />
+    <option name="y" value="-9" />
+    <option name="width" value="1938" />
+    <option name="height" value="1048" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -132,7 +162,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="copyright.profiles" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -151,7 +181,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.grader2">
+  <component name="RunManager" selected="Python.testing">
     <configuration name="grader1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="TurnGrader" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -217,8 +247,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.grader2" />
         <item itemvalue="Python.testing" />
+        <item itemvalue="Python.grader2" />
         <item itemvalue="Python.grader1" />
       </list>
     </recent_temporary>
@@ -251,7 +281,21 @@
       <option name="project" value="LOCAL" />
       <updated>1565497980099</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="added function grade_event()&#10;fixed way of saving previous state parameters&#10;each event is now graded">
+      <created>1565559632136</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1565559632136</updated>
+    </task>
+    <task id="LOCAL-00004" summary="added speed limit score calculation&#10;added score calculation for each segment&#10;removed duplicate reset_params()">
+      <created>1565583890402</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1565583890402</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TodoView">
@@ -265,15 +309,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49789914" visible="true" weight="0.17437252" />
       <window_info id="Structure" order="1" sideWeight="0.5021008" side_tool="true" visible="true" weight="0.17437252" />
-      <window_info id="Favorites" order="2" sideWeight="0.5010395" side_tool="true" weight="0.17437252" />
+      <window_info id="Favorites" order="2" sideWeight="0.50209206" side_tool="true" weight="0.17437252" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32956153" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.24913494" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7787318" weight="0.32390383" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3125884" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7787318" weight="0.4837341" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32956153" />
@@ -315,7 +358,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
     <MESSAGE value="speed limits changed to km/h&#10;add global variable current_segment&#10;added zone based speed_limit calculation&#10;changed turn 1 while loop limits to distance&#10;removed unwanted code in turn 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="speed limits changed to km/h&#10;add global variable current_segment&#10;added zone based speed_limit calculation&#10;changed turn 1 while loop limits to distance&#10;removed unwanted code in turn 1" />
+    <MESSAGE value="added function grade_event()&#10;fixed way of saving previous state parameters&#10;each event is now graded" />
+    <MESSAGE value="added speed limit score calculation&#10;added score calculation for each segment&#10;removed duplicate reset_params()" />
+    <option name="LAST_COMMIT_MESSAGE" value="added speed limit score calculation&#10;added score calculation for each segment&#10;removed duplicate reset_params()" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -342,27 +387,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>738</line>
+          <line>740</line>
           <option name="timeStamp" value="161" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>817</line>
+          <line>819</line>
           <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>840</line>
+          <line>842</line>
           <option name="timeStamp" value="169" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>763</line>
+          <line>765</line>
           <option name="timeStamp" value="170" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>724</line>
+          <line>726</line>
           <option name="timeStamp" value="179" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -372,33 +417,33 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>624</line>
+          <line>630</line>
           <option name="timeStamp" value="192" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>622</line>
+          <line>628</line>
           <option name="timeStamp" value="195" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>619</line>
-          <option name="timeStamp" value="197" />
+          <line>182</line>
+          <option name="timeStamp" value="214" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>172</line>
-          <option name="timeStamp" value="199" />
+          <line>186</line>
+          <option name="timeStamp" value="216" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>451</line>
-          <option name="timeStamp" value="212" />
+          <line>626</line>
+          <option name="timeStamp" value="218" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/grader2.py</url>
-          <line>424</line>
-          <option name="timeStamp" value="213" />
+          <url>file://$PROJECT_DIR$/testing.py</url>
+          <line>10</line>
+          <option name="timeStamp" value="222" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -416,11 +461,17 @@
         <watch expression="dist" />
         <watch expression="event_dist" />
         <watch expression="prev_speed" language="Python" />
+        <watch expression="len(points)" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
+      <expression>
+        <expression-string>len(points)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>prev_speed</expression-string>
         <language-id>Python</language-id>
@@ -467,21 +518,7 @@
     </entry>
     <entry file="file://$USER_HOME$/Python36/Lib/site-packages/geopy/units.py" />
     <entry file="file://$USER_HOME$/Python36/Lib/site-packages/geopy/distance.py" />
-    <entry file="file://$PROJECT_DIR$/testing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="21" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/enum.py" />
-    <entry file="file://$USER_HOME$/Python36/Lib/types.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2430">
-          <caret line="135" selection-start-line="135" selection-end-line="135" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Python36/Lib/enum.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9882">
@@ -513,6 +550,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Python36/Lib/types.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="135" selection-start-line="135" selection-end-line="135" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$USER_HOME$/Python36/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="142">
@@ -520,15 +564,45 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/python-skeletons/numpy/core/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="329">
+          <caret line="488" column="8" selection-start-line="488" selection-start-column="8" selection-end-line="488" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/testing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="23" lean-forward="true" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/grader2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="203" lean-forward="true" selection-start-line="203" selection-end-line="203" />
+        <state relative-caret-position="259">
+          <caret line="583" lean-forward="true" selection-start-line="583" selection-end-line="583" />
           <folding>
             <element signature="e#89#99#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="Copyright.UI">
+        <settings>
+          <last-edited>Shankar</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
