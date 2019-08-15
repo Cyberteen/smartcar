@@ -10,6 +10,15 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
+log_files = [
+'log_LAPS_2019_07_14_15_35_54',
+'log_LAPS_2019_07_14_15_53_38',
+'log_LAPS_2019_07_14_16_10_42',
+'log_LAPS_2019_07_14_16_27_53',
+'log_LAPS_2019_07_14_16_45_15',
+'log_LAPS_2019_07_14_17_21_23'
+]
+
 time_idx = 1
 rpm_idx = 6
 speed_idx = 7
@@ -160,6 +169,7 @@ def segment_report():
 
     if len(event_dist[State.accelerating.value]) is not 0:
         grade_event(State.accelerating)
+        event_dist = [[], [], [], []]
 
     print("No.of accelerations: " + str(len(segment_scores[State.accelerating.value])))
 
@@ -173,6 +183,7 @@ def segment_report():
 
     if len(event_dist[State.decelerating.value]) is not 0:
         grade_event(State.decelerating)
+        event_dist = [[], [], [], []]
 
     print("No.of Decelerations: " + str(len(segment_scores[State.decelerating.value])))
 
@@ -182,7 +193,17 @@ def segment_report():
 
     print("Total Deceleration score: " + str(score) + "%")
 
+    score = 0
+    if len(event_dist[State.cruise.value]) is not 0:
+        grade_event(State.cruise)
+        event_dist = [[], [], [], []]
 
+    print("No.of crusie events: " + str(len(segment_scores[State.cruise.value])))
+
+    for event_score in segment_scores[State.cruise.value]:
+        score += (event_score[1] / total_event_dist[State.cruise.value]* event_score[0])
+
+    print("Total cruising score: " + str(score) + "%")
 
 def turn_report():
     global turn_exitSpeed, turn_entrySpeed, turn_excess, avg_speed
@@ -345,7 +366,7 @@ def grade_event(event):
     global event_dist, thresh, speed_limits, current_segment, complete_stop, min_speed
     global speed, prev_speed, acc1, acc2, total_event_dist
 
-    if (event is State.accelerating) or (event is State.decelerating):
+    if (event is State.accelerating) or (event is State.decelerating) or (event is State.cruise):
         acc_dist = 0
         dec_dist = 0
         cruise_dist = 0
@@ -366,7 +387,7 @@ def grade_event(event):
             # if exceeded the threshold, calculate penalty
             # dist accelerated * excess accelerated * 0.28 for m/s^2 conversion
             acc_penalty += (0, a[0] * a[1] * 0.28)[a[1] > 0]
-            excess_jerk = a[2] - thresh[3] # 3rd parameter is the jerk
+            excess_jerk = abs(a[2]) - thresh[3] # 3rd parameter is the jerk
             jerk_penalty += (0, a[0]* excess_jerk * 0.28) [excess_jerk > 0]
             total_jerk += abs(a[2])
             # 1st element is the distance covered over last second. 5th element is that zone's value
@@ -379,7 +400,7 @@ def grade_event(event):
         if acc_dist is not 0:
             acc_score = (1 - abs((acc_penalty / (acc_dist * thresh[event.value] * 0.28)))) * 100
             jerk_score = (1 - abs((jerk_penalty / (acc_dist * thresh[3]*0.28)))) * 100
-            segment_scores[event.value].append((acc_score, acc_dist))
+            #segment_scores[event.value].append((acc_score, acc_dist))
 
             print(event.name + ' event Score:' + str(acc_score) + ' %')
             print("Jerk score: " + str(jerk_score) + ' %')
@@ -405,7 +426,9 @@ def grade_event(event):
         speed_limit_score *= 100 # in terms of percentage
         print("Total speed limit score: " + str(speed_limit_score)+ "%")
 
-        print("Complete " + event.name + " Score: " + str( 0.33*acc_score + 0.33*jerk_score + 0.33*speed_limit_score))
+        total_event_score = 0.33*acc_score + 0.33*jerk_score + 0.33*speed_limit_score
+        print("Complete " + event.name + " Score: " + str(total_event_score))
+        segment_scores[event.value].append((acc_dist,total_event_score))
 
     if event is State.stop:
         if prev_zone is Zone.Special and has_stopSign:
@@ -534,10 +557,10 @@ def plot_raw():
 
     plt.plot(dist_axis, speed_axis, label='Speed(m/s)', marker='.')
 
-    acc_thresh = thresh[0]*0.28
-    for a in acc_axis:
-        if a > acc_thresh:
-            plt.plot(dist_axis,a,c='r')
+    # acc_thresh = thresh[0]*0.28
+    # for a in acc_axis:
+    #     if a > acc_thresh:
+    #         plt.plot(dist_axis,a,c='r')
 
 
     plt.plot(dist_axis, acc_axis, label='Acceleration(m/s^2)', marker = '.')
@@ -546,8 +569,9 @@ def plot_raw():
     plt.legend()
     plt.show()
 
+
 # with open('C:\\Users\\ssridhar\\Documents\\logs\\log_LAPS_2019_07_14_16_10_42.csv') as file:
-with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\log_LAPS_2019_07_14_16_10_42.csv') as file:
+with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\'+log_files[2]+'.csv') as file:
     reader = csv.reader(file, delimiter=',')
 
     for row in reader:
