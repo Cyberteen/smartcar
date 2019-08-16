@@ -47,10 +47,11 @@ zone_limits = [
 ]
 
 # speed limits for each zone in a segment. Speed in km/h
+# Stop signs have 20 mph as turn speed limit, stop lights have 25 mph max.
 speed_limits = [
     (40.23, 40.23, 32.18, 72.41),  # (25, 25, 20, 45),  # segment 1
-    (72.41, 72.41, 56.3),
-    (56.3, 40.23, 72.41)# segment 2
+    (72.41, 72.41,40.23, 56.3), # (45,45,25,35)
+    (56.3, 56.3, 40.23, 72.41)# segment 2 jack trice stop light
 ]
 
 
@@ -357,7 +358,7 @@ def calc_excess():
     if state_now != State.stop:
         delta_dist = current_dist - prev_dist
         if state_now is not State.cruise:
-            acc_thresh = get_threshold()
+            acc_thresh = get_threshold(state_now)
         else:
             acc_thresh = thresh[State.cruise.value]
         excess_acc = abs(acc2) - abs(acc_thresh)
@@ -584,8 +585,9 @@ def reset_params():
 def save_data():
     global dist, speed, acc2, jerk, current_zone, segment_idx
 
-    segment_raw_data.append((dist, speed, acc2, jerk, get_threshold(), speed_limits[segment_idx][current_zone.value]
-                             , thresh[3], turn_regression(speed), normal_regression(speed)))
+    segment_raw_data.append((dist, speed, acc2, jerk, get_threshold(state_now), speed_limits[segment_idx][current_zone.value]
+                             , thresh[3], turn_regression(speed), normal_regression(speed),
+                             normal_dec_regression(speed), turn_dec_regression(speed), state_now.value))
 
 
 def plot_raw():
@@ -600,6 +602,8 @@ def plot_raw():
     jerk_thresh_axis = []
     turn_thresh_axis = []
     normal_thresh_axis = []
+    negative_normalThresh_axis = []
+    negative_turnThresh_axis = []
     # convert each param in tuple to a list and units of m/s
     for s in segment_raw_data:
         dist_axis.append(s[0])
@@ -611,12 +615,14 @@ def plot_raw():
         jerk_thresh_axis.append((s[6]*0.28))
         turn_thresh_axis.append((s[7]*0.28))
         normal_thresh_axis.append((s[8]*0.28))
+        negative_normalThresh_axis.append(s[9]*0.28)
+        negative_turnThresh_axis.append(s[10]*0.28)
 
     plt.plot(dist_axis, speed_axis, label='Speed(m/s)', color='b', marker='.')
-    plt.plot(dist_axis, acc_axis, label='Acceleration(m/s^2)', color='k', marker='.')
+    plt.plot(dist_axis, acc_axis, label='Acceleration/Deceleration(m/s^2)', color='k', marker='.')
     plt.plot(dist_axis, jerk_axis, label='Jerk(m/s^3)', color='g', marker='.')
 
-    plt.plot(dist_axis, thresh_axis, label='Threshold(m/s^2)', lw=1.0, color='r', linestyle='-.')
+    plt.plot(dist_axis, thresh_axis, label='Combined Acc/Dec. Threshold(m/s^2)', lw=1.0, color='r', linestyle='-.')
     plt.plot(dist_axis, speed_limit_axis, label = 'Speed Limit(m/s)', lw=1.0, color = 'r', linestyle = '--')
     plt.plot(dist_axis, jerk_thresh_axis, label = 'Jerk threshold(m/s^3)', lw=1.0, color='r', linestyle = ':')
 
@@ -625,10 +631,12 @@ def plot_raw():
     plt.show()
 
     plt.figure()
-    plt.plot(dist_axis, acc_axis, label='Acceleration(m/s^2)', color='k', marker='.')
-    plt.plot(dist_axis, turn_thresh_axis, label='Turn threshold(m/s^2)', lw=1.0, color='r', linestyle = ':')
-    plt.plot(dist_axis, thresh_axis, label='Threshold(m/s^2)', lw=1.0, color='g', linestyle='-.')
-    plt.plot(dist_axis, normal_thresh_axis, label='Normal(m/s^2)', lw=1.0, color='r', linestyle=':')
+    plt.plot(dist_axis, acc_axis, label='Acceleration/Deceleration(m/s^2)', color='k', marker='.')
+    plt.plot(dist_axis, turn_thresh_axis, label='Turn Acc Threshold(m/s^2)', lw=1.0, color='r', linestyle = ':')
+    plt.plot(dist_axis, thresh_axis, label='Combined Acc/Dec Threshold(m/s^2)', lw=1.0, color='g', linestyle='-.')
+    plt.plot(dist_axis, normal_thresh_axis, label='Straight Acc Threshold(m/s^2)', lw=1.0, color='r', linestyle='--')
+    plt.plot(dist_axis, negative_normalThresh_axis, label='Straight Dec Threshold m/s^2)', lw=1.0, color='r', linestyle='--')
+    plt.plot(dist_axis, negative_turnThresh_axis, label='Turn Dec Threshold(m/s^2)', lw=1.0, color='r', linestyle=':')
 
     plt.xlabel("Distance(m)")
     plt.legend()
@@ -640,25 +648,54 @@ def turn_regression(speed):
     turn_thresh =  7.7871 * pow(math.e, speed * (-0.051))
     return turn_thresh
 
+
 def normal_regression(speed):
     normal_thresh = 14.477 * pow(math.e, speed * (-0.034))
     return normal_thresh
 
-def get_threshold():
+
+def turn_dec_regression(speed):
+
+    return -1 * (8.28 * pow(math.e, speed * (-0.037)))
+
+
+def normal_dec_regression(speed):
+
+    return -1 *(13.028 * pow(math.e, speed * (-0.018)))
+
+
+def get_threshold(event):
     global current_zone, speed
 
-    if current_zone == Zone.Turn:
-        #acc_thresh = 6.1875 * pow(math.e, speed * (-0.043))
-        acc_thresh = 7.7871 * pow(math.e, speed * (-0.051))
-        return acc_thresh
+    if event is State.accelerating:
+        if current_zone == Zone.Turn:
+            #acc_thresh = 6.1875 * pow(math.e, speed * (-0.043))
+            acc_thresh = 7.7871 * pow(math.e, speed * (-0.051))
+            return acc_thresh
 
-    else:
-        acc_thresh = 14.477 * pow(math.e, speed * (-0.034))
-        return acc_thresh
+        else:
+            acc_thresh = 14.477 * pow(math.e, speed * (-0.034))
+            return acc_thresh
 
+    if event is State.decelerating:
+        if current_zone == Zone.Turn:
+            # acc_thresh = 6.1875 * pow(math.e, speed * (-0.043))
+            acc_thresh = 8.28 * pow(math.e, speed * (-0.037))
+            return acc_thresh*-1
+
+        else:
+            acc_thresh = 13.028 * pow(math.e, speed * (-0.018))
+            return acc_thresh*-1
+
+    if event is State.cruise or event is State.stop:
+
+        if acc2 >= 0:
+            return 3.0
+        else:
+            return -3.0
 
 # with open('C:\\Users\\ssridhar\\Documents\\logs\\log_LAPS_2019_07_14_16_10_42.csv') as file:
-with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\' + log_files[1] + '.csv') as file:
+with open('C:\\Users\\DELL\\Documents\\Smart Car\\final driving files\\' + log_files[3] + '.csv') as file:
     reader = csv.reader(file, delimiter=',')
 
     for row in reader:
